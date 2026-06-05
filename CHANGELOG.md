@@ -4,9 +4,21 @@
 
 ## [Unreleased]
 ### Added
-- 剧本YAML结构化生成模块开发
+- 数据库接入，小说素材与生成剧本持久化存储
 - 前端页面对接LLM解析接口
-- 数据库接入，小说素材持久化存储
+
+## [v0.4.0] - 2026-06-06
+### Added
+- 新增剧本YAML结构化生成接口 `/api/generate-script`
+- 支持自动清理大模型输出的markdown代码块标记
+- 内置YAML语法校验，解析失败返回明确错误信息
+
+### Fixed
+- 统一方法名为 `generate_text()`，解决YAML生成调用不匹配问题
+- 修复 `generate_script_yaml` 方法缩进错误，正确归属类内
+- 实现标准单例模式，全局仅初始化一次客户端
+- 将 `split_text()` 分片函数封装到 `DoubaoClient` 类内
+- 规范 `yaml` 库导入位置，符合Python编码规范
 
 ## [v0.3.0] - 2026-06-05
 ### Docs
