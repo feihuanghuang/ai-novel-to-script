@@ -76,6 +76,10 @@ class DoubaoClient:
         将小说内容转换为标准YAML格式的剧本
         返回解析后的字典，调用失败抛出异常
         """
+        # 输入前置校验，空文本或纯空格直接抛出异常
+        if not novel_content.strip():
+            raise Exception("小说内容不能为空")
+
         prompt = f"""
 请将以下小说片段转换为标准YAML格式的剧本，严格遵循以下规则：
 1. 只输出YAML内容，不要任何解释、说明、开场白或结束语
