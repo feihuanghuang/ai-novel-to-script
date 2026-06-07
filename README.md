@@ -4,7 +4,7 @@
 
 一款 AI 辅助剧本创作工具，将小说自动转换为结构化 YAML 格式分镜头短剧剧本。
 
-![image-20260607213755732](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20260607213755732.png)
+![image-20260607213755732](image/image-20260607213755732.png)
 
 ## 演示视频
 
