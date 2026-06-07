@@ -41,7 +41,7 @@ class SaveScriptRequest(BaseModel):
     novel_content: str
     yaml_content: str
 
-# 剧本生成接口
+# 剧本生成接口 —— 多模型适配版
 @app.post("/api/generate-script")
 async def generate_script(request: NovelRequest):
     try:
@@ -50,13 +50,32 @@ async def generate_script(request: NovelRequest):
         
         if not request.api_key.strip():
             raise HTTPException(status_code=400, detail="请输入API密钥")
-        
-        # 动态创建客户端，使用前端传来的API密钥
-        from backend.llm import DoubaoClient
-        doubao_client = DoubaoClient(api_key=request.api_key)
-        
-        script = doubao_client.generate_script_yaml(request.content)
-        
+
+        script = None
+        model_name = request.model
+
+        # 豆包系列
+        if model_name.startswith("doubao-"):
+            from backend.llm import DoubaoClient
+            client = DoubaoClient(api_key=request.api_key)
+            client.model = model_name
+            script = client.generate_script_yaml(request.content)
+
+        # DeepSeek系列
+        elif model_name.startswith("deepseek-"):
+            from backend.llm import DeepSeekClient
+            client = DeepSeekClient(api_key=request.api_key, model=model_name)
+            script = client.generate_script_yaml(request.content)
+
+        # 通义千问系列
+        elif model_name.startswith("qwen"):
+            from backend.llm import QwenClient
+            client = QwenClient(api_key=request.api_key, model=model_name)
+            script = client.generate_script_yaml(request.content)
+
+        else:
+            raise HTTPException(status_code=400, detail=f"不支持的模型：{model_name}")
+
         return {
             "success": True,
             "script": script,
@@ -145,14 +164,12 @@ if __name__ == "__main__":
     import logging
     import sys
 
-    # 配置日志，只显示警告和错误，隐藏uvicorn默认的启动信息
     logging.basicConfig(
         level=logging.WARNING,
         format="%(levelname)s:     %(message)s",
         stream=sys.stdout
     )
 
-    # 手动打印正确的访问地址
     print("\n" + "="*50)
     print("✅ AI小说转剧本工具启动成功！")
     print("📱 本地访问：http://localhost:8000")
@@ -160,7 +177,6 @@ if __name__ == "__main__":
     print("⏹️  按 Ctrl+C 停止服务")
     print("="*50 + "\n")
     
-    # 启动uvicorn服务
     uvicorn.run(
         app, 
         host="0.0.0.0", 
