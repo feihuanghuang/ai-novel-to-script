@@ -5,19 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI小说转剧本工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1f2937; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+        .yaml-key { color: #60a5fa; }
+        .yaml-string { color: #34d399; }
+        .yaml-number { color: #fbbf24; }
+        .yaml-boolean { color: #f87171; }
+        .yaml-comment { color: #9ca3af; font-style: italic; }
+    </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
-        <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             AI小说转剧本工具
         </h1>
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- 左侧历史剧本列表 -->
             <div class="lg:col-span-3 bg-gray-800 rounded-lg p-4 shadow-lg">
-                <h2 class="text-xl font-semibold mb-4">历史剧本</h2>
-                <div id="historyList" class="space-y-2 max-h-[600px] overflow-auto">
-                    <p class="text-gray-500 text-center">暂无历史剧本</p>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">历史剧本</h2>
+                    <button id="refreshHistoryBtn" class="text-gray-400 hover:text-white transition-colors" title="刷新历史">
+                        🔄
+                    </button>
+                </div>
+                <div id="historyList" class="space-y-2 max-h-[500px] md:max-h-[600px] overflow-auto">
+                    <p class="text-gray-500 text-center py-4">暂无历史剧本</p>
                 </div>
             </div>
             
@@ -37,103 +53,252 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">大模型</label>
                     <select id="modelSelect" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="doubao">豆包AI</option>
-                        <option value="qiniu" disabled>七牛云AI（开发中）</option>
-                        <option value="tongyi" disabled>通义千问（开发中）</option>
+                        <option value="doubao">豆包AI（火山方舟）</option>
+                        <option value="deepseek" disabled>DeepSeek（开发中）</option>
+                        <option value="qwen" disabled>通义千问（开发中）</option>
                     </select>
                 </div>
-                
+
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">小说内容（至少3章）</label>
+                    <label class="block text-sm font-medium mb-2">API密钥</label>
+                    <div class="flex gap-2">
+                        <input 
+                            type="password" 
+                            id="apiKey" 
+                            class="flex-1 bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="请输入你的API密钥"
+                        >
+                        <button 
+                            id="toggleApiKey" 
+                            class="bg-gray-600 hover:bg-gray-500 text-white px-3 rounded-md transition-colors"
+                            title="显示/隐藏密钥"
+                        >
+                            👁️
+                        </button>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" id="rememberApiKey" class="mr-2">
+                        <label for="rememberApiKey" class="text-xs text-gray-400">记住我的密钥（仅保存在本地）</label>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <a href="https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey" target="_blank" class="text-blue-400 hover:underline">
+                            获取豆包API密钥
+                        </a>
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium">小说内容（至少3章）</label>
+                        <span id="wordCount" class="text-xs text-gray-400">0 字</span>
+                    </div>
                     <textarea 
                         id="novelContent" 
-                        rows="12" 
+                        rows="10" 
                         class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                        placeholder="粘贴你的小说内容..."
+                        placeholder="粘贴你的小说内容，建议包含完整的人物对话和场景描写..."
                     ></textarea>
                 </div>
                 
                 <button 
                     id="generateBtn" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center"
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
                 >
-                    生成剧本
+                    <span>生成剧本</span>
                 </button>
             </div>
             
             <!-- 右侧输出区 -->
             <div class="lg:col-span-5 bg-gray-800 rounded-lg p-6 shadow-lg">
-                <h2 class="text-xl font-semibold mb-4">剧本输出</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">剧本输出</h2>
+                    <span id="scriptStatus" class="text-xs text-gray-400">等待生成</span>
+                </div>
                 
-                <div class="mb-4 flex gap-2">
-                    <button id="editBtn" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                <div class="mb-4 flex flex-wrap gap-2">
+                    <button id="editBtn" disabled class="flex-1 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700/50 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
                         编辑模式
                     </button>
-                    <button id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                    <button id="saveBtn" disabled class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
                         保存剧本
                     </button>
-                    <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                    <button id="downloadBtn" disabled class="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
                         下载YAML
                     </button>
                 </div>
                 
-                <div id="outputArea" class="bg-gray-900 rounded-md p-4 h-[500px] overflow-auto font-mono text-sm">
-                    <p class="text-gray-500 text-center">生成的剧本将显示在这里</p>
+                <div id="outputArea" class="bg-gray-900 rounded-md p-4 h-[450px] md:h-[500px] overflow-auto font-mono text-sm">
+                    <p class="text-gray-500 text-center py-20">生成的剧本将显示在这里</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // DOM元素
         const generateBtn = document.getElementById('generateBtn');
         const novelContent = document.getElementById('novelContent');
         const scriptType = document.getElementById('scriptType');
         const modelSelect = document.getElementById('modelSelect');
+        const apiKeyInput = document.getElementById('apiKey');
+        const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+        const rememberApiKeyCheckbox = document.getElementById('rememberApiKey');
         const outputArea = document.getElementById('outputArea');
         const editBtn = document.getElementById('editBtn');
         const saveBtn = document.getElementById('saveBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const historyList = document.getElementById('historyList');
-        
+        const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+        const wordCount = document.getElementById('wordCount');
+        const scriptStatus = document.getElementById('scriptStatus');
+
+        // 全局状态
         let currentYaml = '';
         let currentNovelContent = '';
         let isEditMode = false;
         let currentScriptId = null;
-        
-        // 页面加载时获取历史剧本列表
-        window.addEventListener('load', loadHistory);
-        
+        let isGenerating = false;
+
+        // 页面初始化
+        window.addEventListener('load', init);
+
+        function init() {
+            loadLocalStorage();
+            loadHistory();
+            bindEvents();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            generateBtn.addEventListener('click', generateScript);
+            novelContent.addEventListener('input', updateWordCount);
+            toggleApiKeyBtn.addEventListener('click', toggleApiKeyVisibility);
+            rememberApiKeyCheckbox.addEventListener('change', saveApiKeyToLocalStorage);
+            editBtn.addEventListener('click', toggleEditMode);
+            saveBtn.addEventListener('click', saveScript);
+            downloadBtn.addEventListener('click', downloadScript);
+            refreshHistoryBtn.addEventListener('click', loadHistory);
+            novelContent.addEventListener('input', debounce(saveInputToLocalStorage, 500));
+            scriptType.addEventListener('change', saveInputToLocalStorage);
+            modelSelect.addEventListener('change', saveInputToLocalStorage);
+        }
+
+        // 加载本地存储
+        function loadLocalStorage() {
+            const savedApiKey = localStorage.getItem('doubao_api_key');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+                rememberApiKeyCheckbox.checked = true;
+            }
+
+            const savedNovelContent = localStorage.getItem('novel_content');
+            if (savedNovelContent) {
+                novelContent.value = savedNovelContent;
+                updateWordCount();
+            }
+
+            const savedScriptType = localStorage.getItem('script_type');
+            if (savedScriptType) {
+                scriptType.value = savedScriptType;
+            }
+
+            const savedModel = localStorage.getItem('selected_model');
+            if (savedModel) {
+                modelSelect.value = savedModel;
+            }
+        }
+
+        // 保存API密钥到本地
+        function saveApiKeyToLocalStorage() {
+            if (rememberApiKeyCheckbox.checked) {
+                localStorage.setItem('doubao_api_key', apiKeyInput.value);
+            } else {
+                localStorage.removeItem('doubao_api_key');
+            }
+        }
+
+        // 保存输入内容到本地
+        function saveInputToLocalStorage() {
+            localStorage.setItem('novel_content', novelContent.value);
+            localStorage.setItem('script_type', scriptType.value);
+            localStorage.setItem('selected_model', modelSelect.value);
+        }
+
+        // 切换API密钥可见性
+        function toggleApiKeyVisibility() {
+            const type = apiKeyInput.type === 'password' ? 'text' : 'password';
+            apiKeyInput.type = type;
+            toggleApiKeyBtn.textContent = type === 'password' ? '👁️' : '🙈';
+        }
+
+        // 更新字数统计
+        function updateWordCount() {
+            wordCount.textContent = novelContent.value.length + ' 字';
+        }
+
         // 加载历史剧本列表
         async function loadHistory() {
             try {
                 const response = await fetch('/api/scripts');
+                if (!response.ok) throw new Error('服务器响应错误');
+                
                 const scripts = await response.json();
                 
                 if (scripts.length === 0) {
-                    historyList.innerHTML = '<p class="text-gray-500 text-center">暂无历史剧本</p>';
+                    historyList.innerHTML = '<p class="text-gray-500 text-center py-4">暂无历史剧本</p>';
                     return;
                 }
                 
                 historyList.innerHTML = '';
                 scripts.forEach(script => {
                     const scriptItem = document.createElement('div');
-                    scriptItem.className = 'bg-gray-700 rounded-md p-3 cursor-pointer hover:bg-gray-600 transition-colors duration-200';
+                    scriptItem.className = 'bg-gray-700 rounded-md p-3 cursor-pointer hover:bg-gray-600 transition-colors duration-200 group';
+                    
+                    const createdAt = new Date(script.created_at).toLocaleString('zh-CN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
                     scriptItem.innerHTML = `
-                        <div class="font-medium truncate">${script.title}</div>
-                        <div class="text-xs text-gray-400 mt-1">${script.script_type} · ${script.created_at}</div>
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 mr-2">
+                                <div class="font-medium truncate">${escapeHtml(script.title)}</div>
+                                <div class="text-xs text-gray-400 mt-1">${script.script_type} · ${createdAt}</div>
+                            </div>
+                            <button class="delete-btn text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" data-id="${script.id}" title="删除">
+                                🗑️
+                            </button>
+                        </div>
                     `;
-                    scriptItem.addEventListener('click', () => loadScript(script.id));
+
+                    scriptItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('delete-btn')) {
+                            loadScript(script.id);
+                        }
+                    });
+
+                    scriptItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteScript(script.id);
+                    });
+
                     historyList.appendChild(scriptItem);
                 });
             } catch (error) {
                 console.error('加载历史剧本失败:', error);
+                historyList.innerHTML = '<p class="text-red-400 text-center py-4">加载历史失败，请刷新重试</p>';
             }
         }
-        
+
         // 加载单个剧本
         async function loadScript(scriptId) {
             try {
                 const response = await fetch(`/api/scripts/${scriptId}`);
+                if (!response.ok) throw new Error('加载剧本失败');
+                
                 const script = await response.json();
                 
                 currentScriptId = script.id;
@@ -142,133 +307,241 @@
                 
                 novelContent.value = script.novel_content;
                 scriptType.value = script.script_type;
-                outputArea.innerHTML = `<pre class="whitespace-pre-wrap">${currentYaml}</pre>`;
+                updateWordCount();
+                
+                renderYamlOutput(currentYaml);
                 isEditMode = false;
                 editBtn.textContent = '编辑模式';
+                scriptStatus.textContent = '已加载历史剧本';
+                
+                setButtonsEnabled(true);
             } catch (error) {
                 alert('加载剧本失败：' + error.message);
             }
         }
-        
-        // 生成剧本
-        generateBtn.addEventListener('click', async () => {
+
+        // 删除剧本
+        async function deleteScript(scriptId) {
+            if (!confirm('确定要删除这个剧本吗？此操作不可恢复。')) return;
+            
+            try {
+                const response = await fetch(`/api/scripts/${scriptId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('删除失败');
+                
+                loadHistory();
+                
+                if (currentScriptId === scriptId) {
+                    currentYaml = '';
+                    currentScriptId = null;
+                    outputArea.innerHTML = '<p class="text-gray-500 text-center py-20">生成的剧本将显示在这里</p>';
+                    setButtonsEnabled(false);
+                    scriptStatus.textContent = '等待生成';
+                }
+            } catch (error) {
+                alert('删除失败：' + error.message);
+            }
+        }
+
+        // 生成剧本（核心函数，已修复，同时为多模型预留接口）
+        async function generateScript() {
             const content = novelContent.value.trim();
+            const apiKey = apiKeyInput.value.trim();
             
             if (!content) {
                 alert('请输入小说内容');
                 return;
             }
             
+            if (!apiKey) {
+                alert('请输入API密钥');
+                return;
+            }
+
+            if (isGenerating) return;
+            
             currentNovelContent = content;
             currentScriptId = null;
+            isGenerating = true;
             
             generateBtn.disabled = true;
-            generateBtn.textContent = '生成中...';
-            outputArea.innerHTML = '<p class="text-blue-400 text-center">正在生成剧本，请稍候...</p>';
-            
+            generateBtn.innerHTML = '<span class="animate-spin">⏳</span> 生成中...';
+            outputArea.innerHTML = '<p class="text-blue-400 text-center py-20">正在生成剧本，请稍候...</p>';
+            scriptStatus.textContent = '正在生成...';
+            setButtonsEnabled(false);
+
             try {
                 const response = await fetch('/api/generate-script', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         content: content,
                         script_type: scriptType.value,
-                        model: modelSelect.value
+                        model: modelSelect.value,
+                        api_key: apiKey
                     })
                 });
-                
+
                 const data = await response.json();
                 
-                if (data.success) {
+                if (response.ok && data.success) {
                     currentYaml = data.yaml;
-                    outputArea.innerHTML = `<pre class="whitespace-pre-wrap">${currentYaml}</pre>`;
+                    renderYamlOutput(currentYaml);
                     isEditMode = false;
                     editBtn.textContent = '编辑模式';
+                    scriptStatus.textContent = '生成成功';
+                    setButtonsEnabled(true);
                 } else {
-                    outputArea.innerHTML = `<p class="text-red-400">生成失败：${data.detail}</p>`;
+                    const errorMsg = data.detail || '生成失败，请检查API密钥是否正确';
+                    outputArea.innerHTML = `<p class="text-red-400 text-center py-20">${escapeHtml(errorMsg)}</p>`;
+                    scriptStatus.textContent = '生成失败';
                 }
             } catch (error) {
-                outputArea.innerHTML = `<p class="text-red-400">网络错误：${error.message}</p>`;
+                outputArea.innerHTML = `<p class="text-red-400 text-center py-20">网络错误：${escapeHtml(error.message)}</p>`;
+                scriptStatus.textContent = '网络错误';
             } finally {
+                isGenerating = false;
                 generateBtn.disabled = false;
-                generateBtn.textContent = '生成剧本';
+                generateBtn.innerHTML = '<span>生成剧本</span>';
             }
-        });
-        
-        // 编辑模式切换
-        editBtn.addEventListener('click', () => {
+        }
+
+        // 渲染带语法高亮的YAML
+        function renderYamlOutput(yaml) {
+            const highlighted = yaml
+                .replace(/(#.*)$/gm, '<span class="yaml-comment">$1</span>')
+                .replace(/^(\s*[\w-]+:)/gm, '<span class="yaml-key">$1</span>')
+                .replace(/:\s*(".*?"|'.*?')/g, ': <span class="yaml-string">$1</span>')
+                .replace(/:\s*(\d+\.?\d*)/g, ': <span class="yaml-number">$1</span>')
+                .replace(/:\s*(true|false)/g, ': <span class="yaml-boolean">$1</span>');
+            
+            outputArea.innerHTML = `<pre class="whitespace-pre-wrap">${highlighted}</pre>`;
+        }
+
+        // 切换编辑模式
+        function toggleEditMode() {
             if (!currentYaml) return;
             
             isEditMode = !isEditMode;
             
             if (isEditMode) {
-                outputArea.innerHTML = `<textarea id="editArea" class="w-full h-full bg-gray-900 border-none outline-none resize-none font-mono text-sm">${currentYaml}</textarea>`;
+                outputArea.innerHTML = `<textarea id="editArea" class="w-full h-full bg-gray-900 border-none outline-none resize-none font-mono text-sm p-0">${escapeHtml(currentYaml)}</textarea>`;
                 editBtn.textContent = '保存编辑';
+                scriptStatus.textContent = '编辑模式';
             } else {
                 const editArea = document.getElementById('editArea');
                 currentYaml = editArea.value;
-                outputArea.innerHTML = `<pre class="whitespace-pre-wrap">${currentYaml}</pre>`;
+                renderYamlOutput(currentYaml);
                 editBtn.textContent = '编辑模式';
+                scriptStatus.textContent = '编辑已保存';
             }
-        });
-        
+        }
+
         // 保存剧本
-        saveBtn.addEventListener('click', async () => {
+        async function saveScript() {
             if (!currentYaml) {
                 alert('没有可保存的剧本');
                 return;
             }
             
-            const title = prompt('请输入剧本标题：', `剧本_${new Date().toLocaleString()}`);
+            const defaultTitle = `剧本_${new Date().toLocaleString('zh-CN')}`;
+            const title = prompt('请输入剧本标题：', defaultTitle);
             if (!title) return;
             
             try {
-                const response = await fetch('/api/scripts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        script_type: scriptType.value,
-                        novel_content: currentNovelContent,
-                        yaml_content: currentYaml
-                    })
-                });
+                let response;
+                
+                if (currentScriptId) {
+                    response = await fetch(`/api/scripts/${currentScriptId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            script_type: scriptType.value,
+                            novel_content: currentNovelContent,
+                            yaml_content: currentYaml
+                        })
+                    });
+                } else {
+                    response = await fetch('/api/scripts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            script_type: scriptType.value,
+                            novel_content: currentNovelContent,
+                            yaml_content: currentYaml
+                        })
+                    });
+                }
                 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (response.ok && data.success) {
                     alert('剧本保存成功！');
                     currentScriptId = data.id;
-                    loadHistory(); // 重新加载历史列表
+                    loadHistory();
+                    scriptStatus.textContent = '已保存';
                 } else {
-                    alert('保存失败：' + data.detail);
+                    alert('保存失败：' + (data.detail || '未知错误'));
                 }
             } catch (error) {
                 alert('网络错误：' + error.message);
             }
-        });
-        
+        }
+
         // 下载YAML
-        downloadBtn.addEventListener('click', () => {
+        function downloadScript() {
             if (!currentYaml) {
                 alert('没有可下载的剧本');
                 return;
             }
             
-            const blob = new Blob([currentYaml], { type: 'text/yaml' });
+            const defaultFilename = `剧本_${new Date().getTime()}.yaml`;
+            const filename = prompt('请输入文件名：', defaultFilename);
+            if (!filename) return;
+            
+            const blob = new Blob([currentYaml], { type: 'text/yaml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `script_${new Date().getTime()}.yaml`;
+            a.download = filename.endsWith('.yaml') ? filename : `${filename}.yaml`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        });
+        }
+
+        // 设置按钮启用状态
+        function setButtonsEnabled(enabled) {
+            editBtn.disabled = !enabled;
+            saveBtn.disabled = !enabled;
+            downloadBtn.disabled = !enabled;
+        }
+
+        // HTML转义（防止XSS）
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
     </script>
 </body>
 </html>
