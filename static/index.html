@@ -38,7 +38,6 @@
             height: 100%;
         }
 
-        /* —————————— 重新设计的标题（区分度拉满）—————————— */
         .title {
             text-align: center;
             font-size: 2.8rem;
@@ -218,7 +217,6 @@
             }
         }
 
-        /* 滚动条美化 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -243,6 +241,11 @@
             <!-- 左侧：历史剧本 -->
             <div class="card">
                 <h2 class="card-title">历史剧本</h2>
+                <!-- 新增：清空全部、导出全部历史按钮 -->
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <button id="btnClearHistory" class="btn">清空全部历史</button>
+                    <button id="btnExportAllHistory" class="btn">导出全部历史</button>
+                </div>
                 <div id="historyList" class="overflow-auto">
                     <p class="text-sm text-center py-20">暂无历史剧本</p>
                 </div>
@@ -304,6 +307,8 @@
                     <button id="editBtn" class="btn" disabled>编辑模式</button>
                     <button id="saveBtn" class="btn" disabled>保存剧本</button>
                     <button id="downloadBtn" class="btn" disabled>下载YAML</button>
+                    <!-- 保留清空输出按钮 -->
+                    <button id="btnClear" class="btn">清空输出</button>
                 </div>
 
                 <div id="outputArea" class="output-area">
@@ -354,6 +359,10 @@
         novelContent.addEventListener('input', debounce(saveInputToLocalStorage, 500));
         scriptType.addEventListener('change', saveInputToLocalStorage);
         modelSelect.addEventListener('change', saveInputToLocalStorage);
+        // 绑定新增按钮事件
+        document.getElementById("btnClear").addEventListener('click', clearOutput);
+        document.getElementById("btnClearHistory").addEventListener('click', clearAllHistory);
+        document.getElementById("btnExportAllHistory").addEventListener('click', exportAllHistory);
     }
 
     function loadLocalStorage() {
@@ -397,6 +406,7 @@
         wordCount.textContent = novelContent.value.length + ' 字';
     }
 
+    // 加载历史（支持单条删除）
     async function loadHistory() {
         try {
             const response = await fetch('/api/scripts');
@@ -407,15 +417,88 @@
                 return;
             }
             historyList.innerHTML = '';
-            scripts.forEach(script => {
+            scripts.forEach((script, idx) => {
                 const item = document.createElement('div');
                 item.className = 'history-item';
+                item.style.display = "flex";
+                item.style.justifyContent = "space-between";
+                item.style.alignItems = "center";
                 item.innerHTML = `<div>${script.title}</div><div class="text-sm">${script.script_type}</div>`;
                 item.onclick = () => loadScript(script.id);
+
+                // 单条删除按钮
+                const delBtn = document.createElement("span");
+                delBtn.innerText = " ✕";
+                delBtn.style.color = "#ff4444";
+                delBtn.style.fontWeight = "bold";
+                delBtn.style.cursor = "pointer";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm("确定删除这条历史？")) {
+                        delSingleHistory(script.id);
+                    }
+                };
+                item.appendChild(delBtn);
                 historyList.appendChild(item);
             });
         } catch (error) {
             historyList.innerHTML = '<p class="text-red-500 text-center">加载失败</p>';
+        }
+    }
+
+    // 删除单条历史
+    async function delSingleHistory(id) {
+        try {
+            await fetch(`/api/scripts/${id}`, { method: "DELETE" });
+            loadHistory();
+        } catch (e) {
+            alert("删除失败");
+        }
+    }
+
+    // 清空输出区域
+    function clearOutput() {
+        document.getElementById("outputArea").innerHTML = '<p class="text-sm text-center py-20">生成的剧本将显示在这里</p>';
+        currentYaml = "";
+        setButtonsEnabled(false);
+    }
+
+    // 清空全部历史
+    async function clearAllHistory() {
+        if (!confirm('确定要清空所有历史剧本吗？此操作不可恢复！')) return;
+        try {
+            const scripts = await (await fetch('/api/scripts')).json();
+            for (let s of scripts) {
+                await fetch(`/api/scripts/${s.id}`, { method: "DELETE" });
+            }
+            loadHistory();
+            alert('已清空全部历史！');
+        } catch (e) {
+            alert("清空失败");
+        }
+    }
+
+    // 导出全部历史
+    async function exportAllHistory() {
+        try {
+            const scripts = await (await fetch('/api/scripts')).json();
+            if (scripts.length === 0) {
+                alert("暂无历史可导出");
+                return;
+            }
+            let content = "======== 林中箱庭 - 全部历史剧本 ========\n\n";
+            scripts.forEach((item, i) => {
+                content += `【第 ${i+1} 条 | 标题：${item.title} | 类型：${item.script_type}】\n`;
+                content += item.yaml_content + "\n\n";
+            });
+            const blob = new Blob([content], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `林中箱庭_全部历史_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        } catch (e) {
+            alert("导出失败");
         }
     }
 
@@ -464,6 +547,7 @@
                 currentYaml = d.yaml;
                 outputArea.innerText = d.yaml;
                 scriptStatus.textContent = '生成成功';
+                setButtonsEnabled(true);
             } else {
                 outputArea.innerHTML = `<p class="text-red-500">${d.detail || '生成失败'}</p>`;
                 scriptStatus.textContent = '失败';
@@ -474,7 +558,6 @@
             isGenerating = false;
             generateBtn.disabled = false;
             generateBtn.textContent = '生成剧本';
-            setButtonsEnabled(true);
         }
     }
 
