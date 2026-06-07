@@ -35,7 +35,7 @@ class DoubaoClient:
         }
 
         try:
-            response = requests.post(self.base_url, headers=self.headers, json=data, timeout=60)
+            response = requests.post(self.base_url, headers=self.headers, json=data, timeout=500)
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
         except Exception as e:
