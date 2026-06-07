@@ -6,6 +6,22 @@
 
 ![image-20260607213755732](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20260607213755732.png)
 
+## 演示视频
+
+https://www.bilibili.com/video/BV1caE86BEDG/?vd_source=f8ecc52d3a26cc68573e861e1e7abce7#reply116710082349305## 项目演示
+<iframe 
+  src="//player.bilibili.com/player.html?bvid=BV1caE86BEDG&p=1&high_quality=1&danmaku=0" 
+  width="100%" 
+  height="450" 
+  scrolling="no" 
+  border="0" 
+  frameborder="no" 
+  framespacing="0" 
+  allowfullscreen="true">
+</iframe>
+
+
+
 ## 项目简介
 
 本项目实现小说自动转结构化短剧剧本，内置标准化 Prompt 统一输出格式，自动生成标题、剧情简介、场景、镜头、画面、台词 / 音效。 目前已接入 豆包、DeepSeek、通义千问 三大平台共 9 款主流大模型，支持自由切换，兼容 OpenAI 标准调用协议。
