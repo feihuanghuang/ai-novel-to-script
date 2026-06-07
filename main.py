@@ -134,4 +134,30 @@ async def health_check():
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, timeout_keep_alive=500)
+    import uvicorn
+    import logging
+    import sys
+
+    # 配置日志，只显示警告和错误，隐藏uvicorn默认的启动信息
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="%(levelname)s:     %(message)s",
+        stream=sys.stdout
+    )
+
+    # 手动打印正确的访问地址
+    print("\n" + "="*50)
+    print("✅ AI小说转剧本工具启动成功！")
+    print("📱 本地访问：http://localhost:8000")
+    print("💻 局域网访问：http://你的电脑IP:8000")
+    print("⏹️  按 Ctrl+C 停止服务")
+    print("="*50 + "\n")
+    
+    # 启动uvicorn服务
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=8000, 
+        timeout_keep_alive=500,
+        log_level="warning"  # 只显示警告和错误
+    )
