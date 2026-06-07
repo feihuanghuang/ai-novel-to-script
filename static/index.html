@@ -3,56 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI小说转剧本工具</title>
+    <title>林中箱庭 · 小说转剧本工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <style>
+        /* 全局背景：丛林阳光效果 */
+        body {
+            background: linear-gradient(rgba(0, 40, 20, 0.7), rgba(0, 40, 20, 0.7)), 
+                        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=1920&h=1080");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #e6f7e6;
+        }
+
+        /* 半透明卡片，贴合丛林色调 */
+        .card {
+            background: rgba(0, 30, 15, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(100, 200, 150, 0.2);
+        }
+
+        /* 按钮样式，木质感+自然绿 */
+        .btn-primary {
+            background: linear-gradient(to right, #2d6a4f, #40916c);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #40916c, #52b788);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: rgba(60, 100, 70, 0.6);
+            border: 1px solid rgba(100, 200, 150, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(80, 140, 100, 0.7);
+        }
+
+        /* 输入框样式，半透明+绿色边框 */
+        .input-field {
+            background: rgba(0, 20, 10, 0.6);
+            border: 1px solid rgba(100, 200, 150, 0.3);
+            color: #e6f7e6;
+        }
+        .input-field:focus {
+            border-color: #52b788;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.3);
+        }
+
+        /* 标题样式，阳光渐变 */
+        .main-title {
+            background: linear-gradient(to right, #a8dadc, #f1faee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(100, 200, 150, 0.5);
+        }
+
+        /* 滚动条美化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1f2937; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
-        .yaml-key { color: #60a5fa; }
-        .yaml-string { color: #34d399; }
-        .yaml-number { color: #fbbf24; }
-        .yaml-boolean { color: #f87171; }
-        .yaml-comment { color: #9ca3af; font-style: italic; }
+        ::-webkit-scrollbar-track { background: rgba(0, 30, 15, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(100, 200, 150, 0.4); border-radius: 3px; }
+
+        /* YAML语法高亮适配绿色主题 */
+        .yaml-key { color: #a8dadc; }
+        .yaml-string { color: #80ed99; }
+        .yaml-number { color: #f8edeb; }
+        .yaml-boolean { color: #ffddd2; }
+        .yaml-comment { color: #94d2bd; }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
-        <h1 class="text-3xl md:text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            AI小说转剧本工具
+<body class="min-h-screen p-4">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-bold text-center mb-8 main-title">
+            林中箱庭 · 小说转剧本工具
         </h1>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- 左侧历史剧本列表 -->
-            <div class="lg:col-span-3 bg-gray-800 rounded-lg p-4 shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">历史剧本</h2>
-                    <button id="refreshHistoryBtn" class="text-gray-400 hover:text-white transition-colors" title="刷新历史">
-                        🔄
-                    </button>
-                </div>
-                <div id="historyList" class="space-y-2 max-h-[500px] md:max-h-[600px] overflow-auto">
-                    <p class="text-gray-500 text-center py-4">暂无历史剧本</p>
+            <!-- 左侧：历史剧本 -->
+            <div class="lg:col-span-3 card rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-emerald-200">历史剧本</h2>
+                <div id="historyList" class="space-y-3 max-h-[600px] overflow-auto">
+                    <p class="text-gray-400 text-center py-4">暂无历史剧本</p>
                 </div>
             </div>
-            
-            <!-- 中间输入区 -->
-            <div class="lg:col-span-4 bg-gray-800 rounded-lg p-6 shadow-lg">
-                <h2 class="text-xl font-semibold mb-4">小说输入</h2>
-                
+
+            <!-- 中间：小说输入 -->
+            <div class="lg:col-span-4 card rounded-lg p-6 shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-emerald-200">小说输入</h2>
+
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">剧本类型</label>
-                    <select id="scriptType" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium mb-2 text-emerald-100">剧本类型</label>
+                    <select id="scriptType" class="input-field w-full rounded-md px-3 py-2">
                         <option value="short_drama">短剧剧本</option>
                         <option value="comic">漫剧剧本</option>
                         <option value="stage">话剧剧本</option>
                     </select>
                 </div>
-                
+
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">大模型</label>
-                    <select id="modelSelect" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium mb-2 text-emerald-100">大模型</label>
+                    <select id="modelSelect" class="input-field w-full rounded-md px-3 py-2">
                         <option value="doubao">豆包AI（火山方舟）</option>
                         <option value="deepseek" disabled>DeepSeek（开发中）</option>
                         <option value="qwen" disabled>通义千问（开发中）</option>
@@ -60,75 +112,43 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">API密钥</label>
+                    <label class="block text-sm font-medium mb-2 text-emerald-100">API密钥</label>
                     <div class="flex gap-2">
-                        <input 
-                            type="password" 
-                            id="apiKey" 
-                            class="flex-1 bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="请输入你的API密钥"
-                        >
-                        <button 
-                            id="toggleApiKey" 
-                            class="bg-gray-600 hover:bg-gray-500 text-white px-3 rounded-md transition-colors"
-                            title="显示/隐藏密钥"
-                        >
-                            👁️
-                        </button>
+                        <input type="password" id="apiKey" class="input-field flex-1 rounded-md px-3 py-2" placeholder="请输入你的API密钥">
+                        <button id="toggleApiKey" class="btn-secondary px-3 rounded-md">👁️</button>
                     </div>
                     <div class="flex items-center mt-2">
-                        <input type="checkbox" id="rememberApiKey" class="mr-2">
-                        <label for="rememberApiKey" class="text-xs text-gray-400">记住我的密钥（仅保存在本地）</label>
+                        <input type="checkbox" id="rememberApiKey" class="mr-2 accent-emerald-500">
+                        <label class="text-xs text-gray-300">记住我的密钥（仅保存在本地）</label>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">
-                        <a href="https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey" target="_blank" class="text-blue-400 hover:underline">
-                            获取豆包API密钥
-                        </a>
-                    </p>
                 </div>
 
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-medium">小说内容（至少3章）</label>
+                        <label class="block text-sm font-medium text-emerald-100">小说内容</label>
                         <span id="wordCount" class="text-xs text-gray-400">0 字</span>
                     </div>
-                    <textarea 
-                        id="novelContent" 
-                        rows="10" 
-                        class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                        placeholder="粘贴你的小说内容，建议包含完整的人物对话和场景描写..."
-                    ></textarea>
+                    <textarea id="novelContent" rows="10" class="input-field w-full rounded-md px-3 py-2 resize-none" placeholder="在这里粘贴你的小说内容..."></textarea>
                 </div>
-                
-                <button 
-                    id="generateBtn" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
-                >
-                    <span>生成剧本</span>
-                </button>
+
+                <button id="generateBtn" class="btn-primary w-full text-white font-medium py-3 rounded-md">生成剧本</button>
             </div>
-            
-            <!-- 右侧输出区 -->
-            <div class="lg:col-span-5 bg-gray-800 rounded-lg p-6 shadow-lg">
+
+            <!-- 右侧：剧本输出 -->
+            <div class="lg:col-span-5 card rounded-lg p-6 shadow-lg">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">剧本输出</h2>
+                    <h2 class="text-2xl font-semibold text-emerald-200">剧本输出</h2>
                     <span id="scriptStatus" class="text-xs text-gray-400">等待生成</span>
                 </div>
-                
+
                 <div class="mb-4 flex flex-wrap gap-2">
-                    <button id="editBtn" disabled class="flex-1 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-700/50 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
-                        编辑模式
-                    </button>
-                    <button id="saveBtn" disabled class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
-                        保存剧本
-                    </button>
-                    <button id="downloadBtn" disabled class="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
-                        下载YAML
-                    </button>
+                    <button id="editBtn" disabled class="btn-secondary flex-1 py-2 rounded-md">编辑模式</button>
+                    <button id="saveBtn" disabled class="btn-secondary flex-1 py-2 rounded-md">保存剧本</button>
+                    <button id="downloadBtn" disabled class="btn-secondary flex-1 py-2 rounded-md">下载YAML</button>
                 </div>
-                
-                <div id="outputArea" class="bg-gray-900 rounded-md p-4 h-[450px] md:h-[500px] overflow-auto font-mono text-sm">
-                    <p class="text-gray-500 text-center py-20">生成的剧本将显示在这里</p>
+
+                <div id="outputArea" class="bg-black/30 rounded-md p-4 h-[500px] overflow-auto font-mono text-sm">
+                    <p class="text-gray-400 text-center py-20">生成的剧本将显示在这里</p>
                 </div>
             </div>
         </div>
@@ -148,7 +168,6 @@
         const saveBtn = document.getElementById('saveBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const historyList = document.getElementById('historyList');
-        const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
         const wordCount = document.getElementById('wordCount');
         const scriptStatus = document.getElementById('scriptStatus');
 
@@ -177,7 +196,6 @@
             editBtn.addEventListener('click', toggleEditMode);
             saveBtn.addEventListener('click', saveScript);
             downloadBtn.addEventListener('click', downloadScript);
-            refreshHistoryBtn.addEventListener('click', loadHistory);
             novelContent.addEventListener('input', debounce(saveInputToLocalStorage, 500));
             scriptType.addEventListener('change', saveInputToLocalStorage);
             modelSelect.addEventListener('change', saveInputToLocalStorage);
@@ -190,21 +208,14 @@
                 apiKeyInput.value = savedApiKey;
                 rememberApiKeyCheckbox.checked = true;
             }
-
             const savedNovelContent = localStorage.getItem('novel_content');
             if (savedNovelContent) {
                 novelContent.value = savedNovelContent;
                 updateWordCount();
             }
-
             const savedScriptType = localStorage.getItem('script_type');
             if (savedScriptType) {
                 scriptType.value = savedScriptType;
-            }
-
-            const savedModel = localStorage.getItem('selected_model');
-            if (savedModel) {
-                modelSelect.value = savedModel;
             }
         }
 
@@ -245,14 +256,14 @@
                 const scripts = await response.json();
                 
                 if (scripts.length === 0) {
-                    historyList.innerHTML = '<p class="text-gray-500 text-center py-4">暂无历史剧本</p>';
+                    historyList.innerHTML = '<p class="text-gray-400 text-center py-4">暂无历史剧本</p>';
                     return;
                 }
                 
                 historyList.innerHTML = '';
                 scripts.forEach(script => {
                     const scriptItem = document.createElement('div');
-                    scriptItem.className = 'bg-gray-700 rounded-md p-3 cursor-pointer hover:bg-gray-600 transition-colors duration-200 group';
+                    scriptItem.className = 'bg-emerald-900/50 rounded-md p-3 cursor-pointer hover:bg-emerald-800/50 transition-colors duration-200';
                     
                     const createdAt = new Date(script.created_at).toLocaleString('zh-CN', {
                         year: 'numeric',
@@ -265,26 +276,13 @@
                     scriptItem.innerHTML = `
                         <div class="flex justify-between items-start">
                             <div class="flex-1 mr-2">
-                                <div class="font-medium truncate">${escapeHtml(script.title)}</div>
+                                <div class="font-medium truncate text-emerald-100">${escapeHtml(script.title)}</div>
                                 <div class="text-xs text-gray-400 mt-1">${script.script_type} · ${createdAt}</div>
                             </div>
-                            <button class="delete-btn text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" data-id="${script.id}" title="删除">
-                                🗑️
-                            </button>
                         </div>
                     `;
 
-                    scriptItem.addEventListener('click', (e) => {
-                        if (!e.target.classList.contains('delete-btn')) {
-                            loadScript(script.id);
-                        }
-                    });
-
-                    scriptItem.querySelector('.delete-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        deleteScript(script.id);
-                    });
-
+                    scriptItem.addEventListener('click', () => loadScript(script.id));
                     historyList.appendChild(scriptItem);
                 });
             } catch (error) {
@@ -320,32 +318,7 @@
             }
         }
 
-        // 删除剧本
-        async function deleteScript(scriptId) {
-            if (!confirm('确定要删除这个剧本吗？此操作不可恢复。')) return;
-            
-            try {
-                const response = await fetch(`/api/scripts/${scriptId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) throw new Error('删除失败');
-                
-                loadHistory();
-                
-                if (currentScriptId === scriptId) {
-                    currentYaml = '';
-                    currentScriptId = null;
-                    outputArea.innerHTML = '<p class="text-gray-500 text-center py-20">生成的剧本将显示在这里</p>';
-                    setButtonsEnabled(false);
-                    scriptStatus.textContent = '等待生成';
-                }
-            } catch (error) {
-                alert('删除失败：' + error.message);
-            }
-        }
-
-        // 生成剧本（核心函数，已修复，同时为多模型预留接口）
+        // 生成剧本
         async function generateScript() {
             const content = novelContent.value.trim();
             const apiKey = apiKeyInput.value.trim();
@@ -367,8 +340,8 @@
             isGenerating = true;
             
             generateBtn.disabled = true;
-            generateBtn.innerHTML = '<span class="animate-spin">⏳</span> 生成中...';
-            outputArea.innerHTML = '<p class="text-blue-400 text-center py-20">正在生成剧本，请稍候...</p>';
+            generateBtn.innerHTML = '⏳ 生成中...';
+            outputArea.innerHTML = '<p class="text-emerald-300 text-center py-20">正在生成剧本，请稍候...</p>';
             scriptStatus.textContent = '正在生成...';
             setButtonsEnabled(false);
 
@@ -406,7 +379,7 @@
             } finally {
                 isGenerating = false;
                 generateBtn.disabled = false;
-                generateBtn.innerHTML = '<span>生成剧本</span>';
+                generateBtn.innerHTML = '生成剧本';
             }
         }
 
@@ -429,12 +402,11 @@
             isEditMode = !isEditMode;
             
             if (isEditMode) {
-                outputArea.innerHTML = `<textarea id="editArea" class="w-full h-full bg-gray-900 border-none outline-none resize-none font-mono text-sm p-0">${escapeHtml(currentYaml)}</textarea>`;
+                outputArea.innerHTML = `<textarea id="editArea" class="w-full h-full bg-black/50 text-emerald-100 p-2 border border-emerald-500/30 rounded">${escapeHtml(currentYaml)}</textarea>`;
                 editBtn.textContent = '保存编辑';
                 scriptStatus.textContent = '编辑模式';
             } else {
-                const editArea = document.getElementById('editArea');
-                currentYaml = editArea.value;
+                currentYaml = outputArea.querySelector('textarea').value;
                 renderYamlOutput(currentYaml);
                 editBtn.textContent = '编辑模式';
                 scriptStatus.textContent = '编辑已保存';
