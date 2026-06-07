@@ -55,181 +55,277 @@
             margin-left: auto;
             margin-right: auto;
             backdrop-filter: blur(6px);
-        }
+        }* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .card-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #5a402a;
-            margin-bottom: 1.2rem;
-            border-bottom: 3px solid #d4c8a1;
-            padding-bottom: 0.5rem;
-        }
+body {
+    background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    padding: 2rem;
+    filter: sepia(0.1) hue-rotate(10deg) brightness(1.1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
 
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #4a3520;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
+.card {
+    background-color: #fffaf0;
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4c8a1' fill-opacity='0.2' fill-rule='evenodd'%3E%3Cpath d='M5 1H1v1H0v3h1v1h4v-1h1V2h-1V1zm-2 4v1H2v-1h1zM4 4H2V3h1V2h1v2z'/%3E%3C/g%3E%3C/svg%3E");
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.3);
+    border: 12px solid transparent;
+    border-image: linear-gradient(45deg, #d4c8a1, #b8a97c, #d4c8a1) 1;
+    height: 100%;
+}
 
-        .input-field {
-            width: 100%;
-            padding: 0.8rem 1.2rem;
-            border: 2px solid #d4c8a1;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.88);
-            font-size: 1rem;
-            color: #333;
-            transition: all 0.3s ease;
-        }
+.title {
+    text-align: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 2rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    background: rgba(121, 85, 46, 0.85);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 2px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    backdrop-filter: blur(6px);
+}
 
-        .input-field:focus {
-            outline: none;
-            border-color: #a68a5a;
-            box-shadow: 0 0 10px rgba(166, 138, 90, 0.3);
-            background: #fff;
-        }
+.card-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #5a402a;
+    margin-bottom: 1.2rem;
+    border-bottom: 3px solid #d4c8a1;
+    padding-bottom: 0.5rem;
+}
 
-        textarea.input-field {
-            resize: vertical;
-            min-height: 150px;
-            line-height: 1.5;
-        }
+.form-group {
+    margin-bottom: 1.2rem;
+}
 
-        .btn {
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid #a68a5a;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            width: 100%;
-            transition: all 0.28s ease;
-            color: #fff;
-            background: linear-gradient(to bottom, #8b7355, #7a6348);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            margin-top: 0.5rem;
-        }
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4a3520;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
 
-        .btn:hover {
-            background: linear-gradient(to bottom, #7a6348, #69543f);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-        }
+.input-field {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #d4c8a1;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.88);
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
 
-        .btn:active {
-            transform: translateY(0);
-        }
+.input-field:focus {
+    outline: none;
+    border-color: #a68a5a;
+    box-shadow: 0 0 10px rgba(166, 138, 90, 0.3);
+    background: #fff;
+}
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+textarea.input-field {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.5;
+}
 
-        .btn-primary {
-            background: linear-gradient(to bottom, #c19a6b, #a67c52);
-        }
+.btn {
+    border-radius: 10px;
+    padding: 0.7rem 1.4rem;
+    border: 2px solid #a68a5a;
+    cursor: pointer;
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    width: 100%;
+    transition: all 0.25s ease;
+    color: #fff;
+    background: linear-gradient(to bottom, #8b7355, #7a6348);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-top: 0.5rem;
+}
 
-        .btn-primary:hover {
-            background: linear-gradient(to bottom, #a67c52, #8b6a46);
-        }
+.btn:hover {
+    background: linear-gradient(to bottom, #7a6348, #69543f);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+}
 
-        .output-area {
-            background: rgba(255, 255, 255, 0.92);
-            border: 2px solid #d4c8a1;
-            border-radius: 8px;
-            padding: 1rem;
-            min-height: 400px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            overflow-y: auto;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
 
-        .history-item {
-            background: rgba(249, 240, 210, 0.6);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.8rem;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            border-left: 4px solid #c19a6b;
-        }
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: #c9bca7;
+}
 
-        .history-item:hover {
-            background: rgba(230, 210, 180, 0.8);
-            transform: translateX(5px);
-        }
+.btn-primary {
+    background: linear-gradient(to bottom, #c19a6b, #a67c52);
+}
 
-        .flex {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
+.btn-primary:hover {
+    background: linear-gradient(to bottom, #a67c52, #8b6a46);
+}
 
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.output-area {
+    background: rgba(255, 255, 255, 0.92);
+    border: 2px solid #d4c8a1;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 400px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
 
-        .overflow-auto {
-            overflow-y: auto;
-            max-height: calc(100vh - 220px);
-        }
+.history-item {
+    background: rgba(249, 240, 210, 0.6);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-left: 4px solid #c19a6b;
+}
 
-        .text-sm {
-            font-size: 0.875rem;
-            color: #6b4e33;
-        }
+.history-item:hover {
+    background: rgba(230, 210, 180, 0.8);
+    transform: translateX(5px);
+}
 
-        .text-center {
-            text-align: center;
-        }
+.flex {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
 
-        .text-red-500 {
-            color: #b91c1c;
-        }
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .py-20 {
-            padding-top: 5rem;
-            padding-bottom: 5rem;
-        }
+.overflow-auto {
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
+.text-sm {
+    font-size: 0.875rem;
+    color: #6b4e33;
+}
 
-        @media (min-width: 1024px) {
-            .grid {
-                grid-template-columns: 1fr 1fr 1.5fr;
-            }
-        }
+.text-center {
+    text-align: center;
+}
 
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
+.text-red-500 {
+    color: #b91c1c;
+}
 
-        ::-webkit-scrollbar-thumb {
-            background: #c19a6b;
-            border-radius: 4px;
-        }
+.py-20 {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
 
-        ::-webkit-scrollbar-track {
-            background: #f1e8d9;
-        }
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: 1fr 1fr 1.5fr;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c19a6b;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1e8d9;
+}
+
+/* 加载动画样式 */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #d4c8a1;
+  border-top: 4px solid #a68a5a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1rem;
+  color: #8a6a46;
+  font-weight: 600;
+}
+/* 移动端适配优化 */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    .title {
+        font-size: 2rem;
+        padding: 0.8rem 1rem;
+    }
+    .card {
+        padding: 1rem;
+    }
+}
     </style>
 </head>
 
@@ -307,7 +403,7 @@
                     <button id="editBtn" class="btn" disabled>编辑模式</button>
                     <button id="saveBtn" class="btn" disabled>保存剧本</button>
                     <button id="downloadBtn" class="btn" disabled>下载YAML</button>
-                    <!-- 保留清空输出按钮 -->
+                    <button id="copyBtn" class="btn" disabled>复制剧本</button>
                     <button id="btnClear" class="btn">清空输出</button>
                 </div>
 
@@ -333,6 +429,7 @@
     const historyList = document.getElementById('historyList');
     const wordCount = document.getElementById('wordCount');
     const scriptStatus = document.getElementById('scriptStatus');
+    const copyBtn = document.getElementById('copyBtn');
 
     let currentYaml = '';
     let currentNovelContent = '';
@@ -359,7 +456,7 @@
         novelContent.addEventListener('input', debounce(saveInputToLocalStorage, 500));
         scriptType.addEventListener('change', saveInputToLocalStorage);
         modelSelect.addEventListener('change', saveInputToLocalStorage);
-        // 绑定新增按钮事件
+        copyBtn.addEventListener('click', copyScriptContent);
         document.getElementById("btnClear").addEventListener('click', clearOutput);
         document.getElementById("btnClearHistory").addEventListener('click', clearAllHistory);
         document.getElementById("btnExportAllHistory").addEventListener('click', exportAllHistory);
@@ -528,7 +625,12 @@
         isGenerating = true;
         generateBtn.disabled = true;
         generateBtn.textContent = '生成中...';
-        outputArea.innerHTML = '<p class="text-center py-20">处理中...</p>';
+        outputArea.innerHTML = `
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">剧本生成中，请稍候...</div>
+  </div>
+`;
         scriptStatus.textContent = '生成中...';
 
         try {
@@ -612,6 +714,7 @@
         editBtn.disabled = !enabled;
         saveBtn.disabled = !enabled;
         downloadBtn.disabled = !enabled;
+        copyBtn.disabled = !enabled;
     }
 
     function debounce(func, wait) {
@@ -621,6 +724,23 @@
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
     }
+    // 一键复制剧本
+function copyScriptContent() {
+    if (!currentYaml) return;
+    navigator.clipboard.writeText(currentYaml)
+        .then(() => {
+            alert('剧本已复制到剪贴板！');
+        })
+        .catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = currentYaml;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('剧本已复制到剪贴板！');
+        });
+}
 </script>
 </body>
 </html>
