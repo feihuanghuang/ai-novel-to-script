@@ -9,7 +9,6 @@ class DoubaoClient:
             base_url=base_url,
             timeout=500
         )
-        # 🔥 只改了这一行！换成你能用的 Doubao-Seed-1.6 模型ID
         self.model = "doubao-seed-1-6-251015"
         self.temperature = 0.3
 
@@ -24,26 +23,35 @@ class DoubaoClient:
 
     def generate_script_yaml(self, novel_content):
         prompt = f"""
-        请将以下小说内容转换为标准的YAML格式剧本。
-        要求：
-        1. 严格按照YAML语法输出
-        2. 不要输出任何markdown代码块标记
-        3. 结构包含novel_info和chapters两个部分
-        4. chapters包含多个chapter，每个chapter包含多个scene，每个scene包含多个beat
-        5. 每个beat包含action和dialogue两个字段
+你是专业短剧编剧，将小说转为【标准分镜头剧本YAML】。
+严格遵守以下规则：
+1. 只输出纯YAML，不要任何解释
+2. 不要输出 ``` 代码块
+3. 结构必须如下：
 
-        小说内容：
-        {novel_content}
-        """
-        
+title: 短剧标题
+summary: 剧情简介（30字）
+scenes:
+  - scene_id: S01
+    location: 场景地点
+    time: 日/夜
+    shots:
+      - shot_id: 1
+        frame: 远景/全景/中景/近景/特写
+        duration: 秒（数字）
+        visual: 画面描述
+        audio: 角色名(情绪):台词 或 【音效】
+
+小说内容：
+{novel_content}
+"""
         result = self.generate_text(prompt)
-        
-        result = re.sub(r'^```yaml\s*', '', result)
-        result = re.sub(r'^```\s*', '', result)
-        result = re.sub(r'\s*```$', '', result)
-        
+        result = re.sub(r'^```yaml', '', result, flags=re.MULTILINE)
+        result = re.sub(r'^```', '', result, flags=re.MULTILINE)
+        result = re.sub(r'```$', '', result, flags=re.MULTILINE)
+
         try:
             script = yaml.safe_load(result)
             return script
         except Exception as e:
-            raise Exception(f"YAML解析失败: {str(e)}\n原始输出: {result}")
+            raise Exception(f"YAML解析失败: {str(e)}\n输出:{result}")
