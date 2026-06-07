@@ -7,11 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from backend.llm import doubao_client
+
 from database import get_db, Script
 import yaml
 import os
-import uvicorn
 
 app = FastAPI(title="AI小说转剧本工具")
 
@@ -34,6 +33,7 @@ class NovelRequest(BaseModel):
     content: str
     script_type: str = "short_drama"
     model: str = "doubao"
+    api_key: str  # 接收前端传来的API密钥
 
 class SaveScriptRequest(BaseModel):
     title: str
@@ -47,6 +47,13 @@ async def generate_script(request: NovelRequest):
     try:
         if not request.content.strip():
             raise HTTPException(status_code=400, detail="小说内容不能为空")
+        
+        if not request.api_key.strip():
+            raise HTTPException(status_code=400, detail="请输入API密钥")
+        
+        # 动态创建客户端，使用前端传来的API密钥
+        from backend.llm import DoubaoClient
+        doubao_client = DoubaoClient(api_key=request.api_key)
         
         script = doubao_client.generate_script_yaml(request.content)
         
@@ -159,5 +166,5 @@ if __name__ == "__main__":
         host="0.0.0.0", 
         port=8000, 
         timeout_keep_alive=500,
-        log_level="warning"  # 只显示警告和错误
+        log_level="warning"
     )
