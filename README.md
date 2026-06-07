@@ -4,11 +4,23 @@
 
 一款 AI 辅助剧本创作工具，将小说自动转换为结构化 YAML 格式分镜头短剧剧本。
 
+![image-20260607213755732](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20260607213755732.png)
+
 ## 演示视频
 
-<iframe src="//player.bilibili.com/player.html?aid=xxxx&bvid=BV1xxx&cid=xxxx&p=1"  scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+https://www.bilibili.com/video/BV1caE86BEDG/?vd_source=f8ecc52d3a26cc68573e861e1e7abce7#reply116710082349305## 项目演示
+<iframe 
+  src="//player.bilibili.com/player.html?bvid=BV1caE86BEDG&p=1&high_quality=1&danmaku=0" 
+  width="100%" 
+  height="450" 
+  scrolling="no" 
+  border="0" 
+  frameborder="no" 
+  framespacing="0" 
+  allowfullscreen="true">
+</iframe>
 
-![image-20260607213755732](C:\Users\hp\AppData\Roaming\Typora\typora-user-images\image-20260607213755732.png)
+
 
 ## 项目简介
 
@@ -174,4 +186,3 @@ python main.py
 
 ## License
 
-MIT

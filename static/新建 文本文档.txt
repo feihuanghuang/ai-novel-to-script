@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>林中箱庭 - AI 小说转剧本工具 | 项目展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(160deg, #0D1A14 0%, #12241C 45%, #1A392E 100%);
+            color: #E2F1E8;
+            line-height: 1.8;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            color: #FFFFFF;
+            letter-spacing: 6px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #B8D8C8;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(144, 224, 180, 0.12);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(144, 224, 180, 0.25);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            color: #D7F0E4;
+            margin-bottom: 18px;
+            padding-left: 12px;
+            border-left: 5px solid #66B99A;
+        }
+
+        p, li {
+            color: #D1E3DA;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        pre {
+            background: rgba(14, 28, 20, 0.7);
+            border: 1px solid rgba(102, 185, 154, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            color: #C2E8D6;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 14px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(102, 185, 154, 0.15);
+            color: #A9E4D0;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(102, 185, 154, 0.2);
+        }
+
+        .footer {
+            text-align: center;
+            color: #88A898;
+            padding-top: 30px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>林中箱庭</h1>
+            <p>AI 小说短剧剧本生成工具 · 结构化剧本创作系统</p>
+        </div>
+
+        <div class="card">
+            <h2>项目介绍</h2>
+            <p>林中箱庭是一款轻量化、高性能、标准化的 AI 小说转剧本工具，专为短剧、短视频创作者打造。</p>
+            <p>项目通过自研剧本 Schema 规范，让 AI 输出稳定、统一、可直接用于拍摄的分镜剧本，彻底解决多模型输出混乱、格式不标准、解析失败等问题。</p>
+            <div>
+                <span class="tag">AI 创作</span>
+                <span class="tag">剧本生成</span>
+                <span class="tag">结构化输出</span>
+                <span class="tag">多模型兼容</span>
+                <span class="tag">轻量化</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>核心功能</h2>
+            <ul>
+                <li>小说一键自动生成专业短剧分镜剧本</li>
+                <li>支持豆包、DeepSeek、通义千问三大平台共 9 款模型</li>
+                <li>严格剧本 Schema 规范，音画分离、格式统一、永不乱码</li>
+                <li>剧本在线预览、复制、下载、保存、管理</li>
+                <li>超长文本支持，500 秒超时保障，万字小说轻松生成</li>
+                <li>PC / 手机 / 局域网多端同步访问</li>
+                <li>精美森林主题 UI，雾面玻璃质感，视觉高级舒适</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>技术架构</h2>
+            <ul>
+                <li>后端：Python + FastAPI</li>
+                <li>数据库：SQLite（开箱即用）</li>
+                <li>ORM：SQLAlchemy</li>
+                <li>AI 接口：OpenAI 标准协议兼容</li>
+                <li>数据格式：YAML + JSON Schema</li>
+                <li>前端：原生 HTML/CSS/JS</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>已支持模型（9 款）</h2>
+            <p><strong>火山方舟 · 豆包</strong></p>
+            <ul>
+                <li>doubao-seed-2.0-pro / lite / mini</li>
+            </ul>
+            <p><strong>DeepSeek 深度求索</strong></p>
+            <ul>
+                <li>deepseek-v4-pro / flash / r1-0528</li>
+            </ul>
+            <p><strong>阿里云 · 通义千问</strong></p>
+            <ul>
+                <li>qwen3.7-max / plus / qwen3.5-flash</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>剧本 Schema 规范（标准化契约）</h2>
+            <pre>
+title: 短剧标题
+summary: 剧情简介（30字）
+scenes:
+  - scene_id: S01
+    location: 场景地点
+    time: 日/夜/黄昏
+    shots:
+      - shot_id: 1
+        frame: 远景/全景/中景/近景/特写
+        duration: 秒
+        visual: 画面描述
+        audio: 台词 或 【音效】
+            </pre>
+        </div>
+
+        <div class="card">
+            <h2>使用流程</h2>
+            <ul>
+                <li>选择模型 → 输入 API Key → 粘贴小说</li>
+                <li>系统自动校验文本 → 发送 AI 生成</li>
+                <li>按 Schema 输出标准剧本</li>
+                <li>在线查看、复制、下载、保存到历史记录</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>版本迭代记录（核心版本）</h2>
+            <ul>
+                <li>v0.1.0 项目初始化</li>
+                <li>v0.2.0 LLM 客户端 + 文本分片</li>
+                <li>v0.4.0 YAML 剧本生成接口</li>
+                <li>v0.5.0 API Key 配置 + 模型选择</li>
+                <li>v0.6.0 UI 森林主题全面升级</li>
+                <li>v0.7.0 9 大模型全接入</li>
+                <li>v0.8.0 剧本 Schema 标准化（PR16）</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>项目亮点</h2>
+            <ul>
+                <li>自研 Schema，解决多模型输出混乱行业痛点</li>
+                <li>格式统一、稳定、可解析、可商用</li>
+                <li>轻量化部署，无需环境，开箱即用</li>
+                <li>界面高级美观，答辩 / 展示 / 开源都适用</li>
+                <li>文档齐全：README + CHANGELOG + Schema 规范</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            林中箱庭 © 2026 | AI 小说转剧本工具 | 版本 v0.8.0
+        </div>
+    </div>
+</body>
+</html>
